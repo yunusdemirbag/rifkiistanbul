@@ -90,6 +90,65 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             overflow: hidden;
+            border: 8px solid #2d1b69;
+            border-radius: 20px;
+            box-shadow: 
+                0 0 0 4px #4c2a85,
+                0 0 0 8px #7c3aed,
+                0 20px 40px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.1);
+            margin: 20px auto;
+        }
+
+        /* Pencere çerçevesi için ek stil */
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -12px;
+            background: linear-gradient(145deg, #7c3aed, #5b21b6);
+            border-radius: 28px;
+            z-index: -1;
+            box-shadow: 
+                0 8px 16px rgba(0,0,0,0.2),
+                inset 0 1px 2px rgba(255,255,255,0.2);
+        }
+
+        /* Pencere içi dekoratif elementler */
+        .window-decoration {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 8px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        .window-decoration::before,
+        .window-decoration::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .window-decoration::before {
+            left: -20px;
+        }
+
+        .window-decoration::after {
+            right: -20px;
         }
 
         .husnanur {
@@ -361,6 +420,7 @@
 <body>
     <div class="header-bar">Nurella Kids - Kedi Bakım Oyunu</div>
     <div class="game-container">
+        <div class="window-decoration"></div>
         <div class="hud">
             <div>Skor: <span id="skor">0</span></div>
             <div>Süre: <span id="sure">30</span>s</div>
@@ -682,7 +742,7 @@
             if (mevcutBalon) {
                 element.removeChild(mevcutBalon);
             }
-            
+
             const balloon = document.createElement('div');
             balloon.className = `speech-bubble ${tip}`;
             balloon.textContent = mesaj;
@@ -1068,7 +1128,7 @@
 
         // DOM yüklendiğinde orijinal pozisyonları kaydet
         window.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.item').forEach(item => {
+        document.querySelectorAll('.item').forEach(item => {
                 orijinalPozisyonlar[item.classList.contains('mama-kabi') ? 'mama' : 'su'] = {
                     left: item.style.left,
                     top: item.style.top,
@@ -1079,7 +1139,7 @@
 
         // Drag and Drop için event listener'lar - yeni sistem
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.item').forEach(item => {
+        document.querySelectorAll('.item').forEach(item => {
                 item.addEventListener('mousedown', dragStart);
                 item.addEventListener('touchstart', dragStart, { passive: false });
                 

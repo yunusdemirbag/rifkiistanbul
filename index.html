@@ -59,25 +59,6 @@
             }
         }
         .game-container {
-            margin-top: 48px;
-        }
-        @media (max-width: 600px) {
-            .game-container {
-                margin-top: 32px;
-            }
-        }
-        @media (min-width: 601px) and (max-width: 1024px) {
-            .game-container {
-                margin-top: 40px;
-            }
-        }
-        @media (min-width: 1025px) {
-            .game-container {
-                margin-top: 56px;
-            }
-        }
-
-        .game-container {
             width: 100%;
             max-width: 450px;
             height: 100vh;
@@ -90,31 +71,64 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             overflow: hidden;
+            border: 8px solid #2d1b69;
+            border-radius: 20px;
+            box-shadow: 
+                0 0 0 4px #4c2a85,
+                0 0 0 8px #7c3aed,
+                0 20px 40px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.1);
+            margin: 20px auto;
         }
 
-        .husnanur {
-            width: 150px;
-            height: 225px;
-            background-image: url('husnanur.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center bottom;
+        /* Pencere çerçevesi için ek stil */
+        .game-container::before {
+            content: '';
             position: absolute;
-            bottom: 20px;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -12px;
+            background: linear-gradient(145deg, #7c3aed, #5b21b6);
+            border-radius: 28px;
+            z-index: -1;
+            box-shadow: 
+                0 8px 16px rgba(0,0,0,0.2),
+                inset 0 1px 2px rgba(255,255,255,0.2);
+        }
+
+        /* Pencere içi dekoratif elementler */
+        .window-decoration {
+            position: absolute;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
+            width: 60px;
+            height: 8px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 5;
         }
 
-        .husnanur .karakter-isim {
-            font-size: 16px;
-            padding: 6px 18px;
-            bottom: -10px; /* Eskiden -40px idi, yukarı taşıdık */
+        .window-decoration::before,
+        .window-decoration::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
+        .window-decoration::before {
+            left: -20px;
+        }
+
+        .window-decoration::after {
         .karakter-isim {
             position: absolute;
             bottom: -20px;
@@ -361,6 +375,7 @@
 <body>
     <div class="header-bar">Nurella Kids - Kedi Bakım Oyunu</div>
     <div class="game-container">
+        <div class="window-decoration"></div>
         <div class="hud">
             <div>Skor: <span id="skor">0</span></div>
             <div>Süre: <span id="sure">30</span>s</div>
