@@ -12,138 +12,123 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #8B4A9C, #6B3A7C);
-            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             overflow: hidden;
-            touch-action: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: relative;
         }
 
-        .header-bar {
+        .game-window {
             width: 100vw;
-            background: #7c3aed;
-            color: #fff;
-            text-align: center;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 18px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-        @media (max-width: 600px) {
-            .header-bar {
-                font-size: 14px;
-                height: 32px;
-            }
-        }
-        @media (min-width: 601px) and (max-width: 1024px) {
-            .header-bar {
-                font-size: 16px;
-                height: 40px;
-            }
-        }
-        @media (min-width: 1025px) {
-            .header-bar {
-                font-size: 20px;
-                height: 56px;
-            }
-        }
-        .game-container {
-            width: 100%;
-            max-width: 450px;
             height: 100vh;
-            max-height: 800px;
+            max-width: 450px;
+            max-height: 95vh;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border-radius: 15px;
+            padding: 8px;
+            box-shadow: 
+                0 0 30px rgba(0,0,0,0.5),
+                inset 0 0 20px rgba(255,255,255,0.1);
+            position: relative;
+            border: 6px solid #2d1b69;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 500px) {
+            .game-window {
+                width: 95vw;
+                height: 95vh;
+                margin: 2.5vh auto;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .game-window {
+                width: 500px;
+                height: 800px;
+                margin: 10vh auto;
+            }
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        @media (min-width: 768px) {
+            .game-header {
+                padding: 12px;
+                font-size: 20px;
+            }
+        }
+
+        .game-container {
+            flex: 1;
             position: relative;
             background-image: url('oda.png');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .husnanur {
+            width: 80px;
+            height: 100px;
+            background-image: url('husnanur.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            cursor: pointer;
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
-            overflow: hidden;
-            border: 8px solid #2d1b69;
-            border-radius: 20px;
-            box-shadow: 
-                0 0 0 4px #4c2a85,
-                0 0 0 8px #7c3aed,
-                0 20px 40px rgba(0,0,0,0.3),
-                inset 0 2px 4px rgba(255,255,255,0.1);
-            margin: 20px auto;
+            transition: transform 0.3s ease;
         }
 
-        /* Pencere çerçevesi için ek stil */
-        .game-container::before {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: -12px;
-            right: -12px;
-            bottom: -12px;
-            background: linear-gradient(145deg, #7c3aed, #5b21b6);
-            border-radius: 28px;
-            z-index: -1;
-            box-shadow: 
-                0 8px 16px rgba(0,0,0,0.2),
-                inset 0 1px 2px rgba(255,255,255,0.2);
+        @media (min-width: 768px) {
+            .husnanur {
+                width: 100px;
+                height: 120px;
+                bottom: 60px;
+            }
         }
 
-        /* Pencere içi dekoratif elementler */
-        .window-decoration {
+        .husnanur:hover {
+            transform: scale(1.05);
+        }
+
+        .name-tag {
             position: absolute;
-            top: 15px;
+            bottom: -25px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 8px;
-            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            z-index: 5;
-        }
-
-        .window-decoration::before,
-        .window-decoration::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
-            background: #ffd700;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .window-decoration::before {
-            left: -20px;
-        }
-
-        .window-decoration::after {
-        .karakter-isim {
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
+            background: rgba(0,0,0,0.8);
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            white-space: nowrap;
-            font-family: 'Courier New', monospace;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            white-space: nowrap;
+            border: 2px solid #FFD700;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
         .kedi {
@@ -159,6 +144,13 @@
             image-rendering: crisp-edges;
             position: absolute;
             transition: all 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .kedi {
+                width: 80px;
+                height: 80px;
+            }
         }
 
         .rifki {
@@ -177,14 +169,22 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             color: #FFD700;
-            padding: 12px;
+            padding: 8px 12px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             z-index: 100;
             border: 2px solid #FFD700;
+            min-width: 100px;
+        }
+
+        @media (min-width: 768px) {
+            .hud {
+                font-size: 14px;
+                padding: 12px;
+            }
         }
 
         .character {
@@ -194,8 +194,8 @@
         }
 
         .item {
-            width: 70px;
-            height: 70px;
+            width: 50px;
+            height: 50px;
             position: absolute;
             cursor: move;
             z-index: 15;
@@ -206,6 +206,13 @@
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
+        }
+
+        @media (min-width: 768px) {
+            .item {
+                width: 70px;
+                height: 70px;
+            }
         }
 
         .item:hover {
@@ -220,48 +227,80 @@
 
         .mama-kabi {
             background-image: url('mama.png');
-            bottom: 60px;
+            bottom: 20px;
             left: 20px;
         }
 
         .su-kabi {
             background-image: url('su.png');
-            bottom: 60px;
-            left: 100px;
+            bottom: 20px;
+            left: 80px;
+        }
+
+        @media (min-width: 768px) {
+            .mama-kabi {
+                bottom: 60px;
+                left: 20px;
+            }
+            
+            .su-kabi {
+                bottom: 60px;
+                left: 100px;
+            }
         }
 
         .speech-bubble {
             position: absolute;
             background: white;
-            border: 4px solid #333;
-            border-radius: 15px;
-            padding: 10px 15px;
-            font-size: 13px;
+            border: 3px solid #333;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 11px;
             font-weight: bold;
-            max-width: 140px;
+            max-width: 120px;
             word-wrap: break-word;
             z-index: 25;
             animation: popIn 0.3s ease;
             box-shadow: 
-                3px 3px 0px rgba(0,0,0,0.3),
+                2px 2px 0px rgba(0,0,0,0.3),
                 inset 1px 1px 2px rgba(255,255,255,0.8);
-            top: -80px;
+            top: -70px;
             left: 50%;
             transform: translateX(-50%);
+        }
+
+        @media (min-width: 768px) {
+            .speech-bubble {
+                border: 4px solid #333;
+                border-radius: 15px;
+                padding: 10px 15px;
+                font-size: 13px;
+                max-width: 140px;
+                top: -80px;
+            }
         }
 
         .speech-bubble::after {
             content: '';
             position: absolute;
-            bottom: -12px;
+            bottom: -10px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 12px solid white;
-            filter: drop-shadow(0px 3px 0px rgba(0,0,0,0.3));
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+            filter: drop-shadow(0px 2px 0px rgba(0,0,0,0.3));
+        }
+
+        @media (min-width: 768px) {
+            .speech-bubble::after {
+                bottom: -12px;
+                border-left: 12px solid transparent;
+                border-right: 12px solid transparent;
+                border-top: 12px solid white;
+            }
         }
 
         @keyframes popIn {
@@ -316,24 +355,32 @@
             transform: translate(-50%, -50%);
             background: linear-gradient(145deg, rgba(0,0,0,0.95), rgba(20,20,20,0.95));
             color: #FFD700;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
-            border: 4px solid #FFD700;
+            border: 3px solid #FFD700;
             text-align: center;
             z-index: 100;
             display: none;
             box-shadow: 
                 5px 5px 0px rgba(0,0,0,0.5),
                 inset 2px 2px 4px rgba(255,215,0,0.3);
+            max-width: 90%;
+        }
+
+        @media (min-width: 768px) {
+            .game-over {
+                padding: 30px;
+                border: 4px solid #FFD700;
+            }
         }
 
         .restart-btn {
             background: linear-gradient(145deg, #4CAF50, #45a049);
             color: white;
             border: 3px solid #2E7D32;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 15px;
@@ -341,6 +388,13 @@
             box-shadow: 
                 3px 3px 0px rgba(0,0,0,0.3),
                 inset 1px 1px 2px rgba(255,255,255,0.3);
+        }
+
+        @media (min-width: 768px) {
+            .restart-btn {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
         }
 
         .restart-btn:hover {
@@ -355,11 +409,11 @@
         @keyframes kediBelir {
             0% { 
                 opacity: 0; 
-                transform: scale(0.5) rotate(-10deg); 
+                transform: scale(0) rotate(180deg); 
             }
             50% { 
-                opacity: 0.7; 
-                transform: scale(1.2) rotate(5deg); 
+                opacity: 0.5; 
+                transform: scale(1.3) rotate(90deg); 
             }
             100% { 
                 opacity: 1; 
@@ -367,39 +421,73 @@
             }
         }
 
-        .kedi.yeni-beliren {
-            animation: kediBelir 0.8s ease;
+        .kedi.yeni-pozisyon {
+            animation: kediBelir 0.8s ease-out;
+        }
+
+        /* Touch iyileştirmeleri */
+        .item, .kedi, .husnanur {
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Mobil için daha büyük dokunma alanları */
+        @media (max-width: 767px) {
+            .item {
+                padding: 10px;
+                margin: -10px;
+            }
+            
+            .kedi {
+                padding: 15px;
+                margin: -15px;
+            }
+        }
+
+        /* Mobil klavye için viewport düzeltmesi */
+        @media screen and (max-height: 500px) {
+            .game-window {
+                height: 100vh;
+                margin: 0 auto;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header-bar">Nurella Kids - Kedi Bakım Oyunu</div>
-    <div class="game-container">
-        <div class="window-decoration"></div>
-        <div class="hud">
-            <div>Skor: <span id="skor">0</span></div>
-            <div>Süre: <span id="sure">30</span>s</div>
-            <div>Seviye: <span id="seviye">1</span></div>
-        </div>
+    <div class="game-window">
+        <div class="game-header">Anne Kedi Bakım Oyunu</div>
+        <div class="game-container">
+            <div class="husnanur character">
+                <div class="name-tag">Husnanur</div>
+            </div>
+            <div class="rifki kedi character">
+                <div class="name-tag">Rıfkı</div>
+            </div>
+            <div class="istanbul kedi character">
+                <div class="name-tag">İstanbul</div>
+            </div>
+            
+            <div class="mama-kabi item" draggable="true"></div>
+            <div class="su-kabi item" draggable="true"></div>
 
-        <div class="husnanur character">
-            <div class="karakter-isim">Husnanur</div>
-        </div>
-        <div class="rifki kedi character">
-            <div class="karakter-isim">Rıfkı</div>
-        </div>
-        <div class="istanbul kedi character">
-            <div class="karakter-isim">İstanbul</div>
-        </div>
-        
-        <div class="mama-kabi item" draggable="true"></div>
-        <div class="su-kabi item" draggable="true"></div>
+            <div class="hud">
+                <div>Skor: <span id="skor">0</span></div>
+                <div>Süre: <span id="sure">30</span>s</div>
+                <div>Seviye: <span id="seviye">1</span></div>
+            </div>
 
-        <div class="game-over" id="gameOver">
-            <h2>ANNEEEEEG!</h2>
-            <p>Oyun Bitti!</p>
-            <p>Final Skoru: <span id="finalSkor">0</span></p>
-            <button class="restart-btn" onclick="yeniOyun()">Yeniden Başla</button>
+            <div class="game-over" id="gameOver">
+                <h2>ANNEEEEEG!</h2>
+                <p>Oyun Bitti!</p>
+                <p>Final Skoru: <span id="finalSkor">0</span></p>
+                <button class="restart-btn" onclick="yeniOyun()">Yeniden Başla</button>
+            </div>
         </div>
     </div>
 
@@ -418,12 +506,12 @@
         let karsilananIstekSayisi = 0;
 
         // Mobilde sürükleme için değişkenler
-        let touchDragging = false;
+        let isDragging = false;
+        let currentDragElement = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
         let touchOffsetX = 0;
         let touchOffsetY = 0;
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
 
         // Mama ve su kabı orijinal pozisyonları
         let orijinalPozisyonlar = {};
@@ -434,31 +522,65 @@
             istanbul: document.querySelector('.istanbul')
         };
 
-        // Kedilerin belireceği pozisyonlar (yeşil noktalar) - oyun alanı sınırları içinde
-        const pozisyonAlanlari = [
-            { x: 50, y: 80, isim: 'pencere-kenari-1' },
-            { x: 150, y: 80, isim: 'pencere-kenari-2' },
-            { x: 250, y: 100, isim: 'komidin-ustu' },
-            { x: 300, y: 150, isim: 'dolap-ustu-1' },
-            { x: 220, y: 150, isim: 'dolap-ustu-2' },
-            { x: 50, y: 170, isim: 'yatak-ustu-1' },
-            { x: 130, y: 170, isim: 'yatak-ustu-2' },
-            { x: 190, y: 170, isim: 'yatak-ustu-3' },
-            { x: 230, y: 230, isim: 'yatak-kenari' },
-            { x: 50, y: 270, isim: 'hali-ustu-1' },
-            { x: 130, y: 270, isim: 'hali-ustu-2' },
-            { x: 210, y: 270, isim: 'hali-ustu-3' },
-            { x: 290, y: 270, isim: 'hali-ustu-4' },
-            { x: 50, y: 350, isim: 'hali-kenari-1' },
-            { x: 130, y: 350, isim: 'hali-kenari-2' },
-            { x: 210, y: 350, isim: 'hali-kenari-3' },
-            { x: 290, y: 350, isim: 'hali-kenari-4' },
-            { x: 370, y: 350, isim: 'hali-kenari-5' },
-            { x: 90, y: 430, isim: 'oda-zemini-1' },
-            { x: 170, y: 430, isim: 'oda-zemini-2' },
-            { x: 250, y: 430, isim: 'oda-zemini-3' },
-            { x: 330, y: 430, isim: 'oda-zemini-4' }
-        ];
+        // Kedilerin belireceği pozisyonlar - responsive
+        function getPozisyonAlanlari() {
+            const gameContainer = document.querySelector('.game-container');
+            const containerWidth = gameContainer ? gameContainer.offsetWidth : 400;
+            const containerHeight = gameContainer ? gameContainer.offsetHeight : 600;
+            
+            // Mobil ve tablet için pozisyonları dinamik olarak ayarla
+            if (window.innerWidth < 768) {
+                return [
+                    { x: 30, y: 60, isim: 'pencere-kenari-1' },
+                    { x: 100, y: 60, isim: 'pencere-kenari-2' },
+                    { x: 170, y: 80, isim: 'komidin-ustu' },
+                    { x: 220, y: 110, isim: 'dolap-ustu-1' },
+                    { x: 150, y: 110, isim: 'dolap-ustu-2' },
+                    { x: 30, y: 140, isim: 'yatak-ustu-1' },
+                    { x: 90, y: 140, isim: 'yatak-ustu-2' },
+                    { x: 140, y: 140, isim: 'yatak-ustu-3' },
+                    { x: 180, y: 180, isim: 'yatak-kenari' },
+                    { x: 30, y: 220, isim: 'hali-ustu-1' },
+                    { x: 90, y: 220, isim: 'hali-ustu-2' },
+                    { x: 150, y: 220, isim: 'hali-ustu-3' },
+                    { x: 210, y: 220, isim: 'hali-ustu-4' },
+                    { x: 30, y: 280, isim: 'hali-kenari-1' },
+                    { x: 90, y: 280, isim: 'hali-kenari-2' },
+                    { x: 150, y: 280, isim: 'hali-kenari-3' },
+                    { x: 210, y: 280, isim: 'hali-kenari-4' },
+                    { x: 270, y: 280, isim: 'hali-kenari-5' },
+                    { x: 60, y: 350, isim: 'oda-zemini-1' },
+                    { x: 120, y: 350, isim: 'oda-zemini-2' },
+                    { x: 180, y: 350, isim: 'oda-zemini-3' },
+                    { x: 240, y: 350, isim: 'oda-zemini-4' }
+                ];
+            } else {
+                return [
+                    { x: 50, y: 80, isim: 'pencere-kenari-1' },
+                    { x: 150, y: 80, isim: 'pencere-kenari-2' },
+                    { x: 250, y: 100, isim: 'komidin-ustu' },
+                    { x: 300, y: 150, isim: 'dolap-ustu-1' },
+                    { x: 220, y: 150, isim: 'dolap-ustu-2' },
+                    { x: 50, y: 170, isim: 'yatak-ustu-1' },
+                    { x: 130, y: 170, isim: 'yatak-ustu-2' },
+                    { x: 190, y: 170, isim: 'yatak-ustu-3' },
+                    { x: 230, y: 230, isim: 'yatak-kenari' },
+                    { x: 50, y: 270, isim: 'hali-ustu-1' },
+                    { x: 130, y: 270, isim: 'hali-ustu-2' },
+                    { x: 210, y: 270, isim: 'hali-ustu-3' },
+                    { x: 290, y: 270, isim: 'hali-ustu-4' },
+                    { x: 50, y: 350, isim: 'hali-kenari-1' },
+                    { x: 130, y: 350, isim: 'hali-kenari-2' },
+                    { x: 210, y: 350, isim: 'hali-kenari-3' },
+                    { x: 290, y: 350, isim: 'hali-kenari-4' },
+                    { x: 370, y: 350, isim: 'hali-kenari-5' },
+                    { x: 90, y: 430, isim: 'oda-zemini-1' },
+                    { x: 170, y: 430, isim: 'oda-zemini-2' },
+                    { x: 250, y: 430, isim: 'oda-zemini-3' },
+                    { x: 330, y: 430, isim: 'oda-zemini-4' }
+                ];
+            }
+        }
 
         const istekMesajlari = {
             acikti: [
@@ -574,6 +696,7 @@
         };
 
         function rastgelePozisyon(element, kediAdi = null) {
+            const pozisyonAlanlari = getPozisyonAlanlari();
             let uygunPozisyonlar = pozisyonAlanlari.filter(p => !kullanilmisPozisyonlar.includes(p.isim));
             
             if (uygunPozisyonlar.length === 0) {
@@ -623,10 +746,10 @@
             
             element.style.left = x + 'px';
             element.style.top = y + 'px';
-            element.classList.add('yeni-beliren');
+            element.classList.add('yeni-pozisyon');
             
             setTimeout(() => {
-                element.classList.remove('yeni-beliren');
+                element.classList.remove('yeni-pozisyon');
             }, 800);
         }
 
@@ -697,7 +820,7 @@
             if (mevcutBalon) {
                 element.removeChild(mevcutBalon);
             }
-            
+
             const balloon = document.createElement('div');
             balloon.className = `speech-bubble ${tip}`;
             balloon.textContent = mesaj;
@@ -769,91 +892,252 @@
             }
         }
 
-        // Yeni sürükleme sistemi
-        function dragStart(e) {
+        // Yeni mobil odaklı sürükleme sistemi
+        function handleTouchStart(e) {
             if (!oyunAktif) return;
             
             e.preventDefault();
+            e.stopPropagation();
+            
+            const touch = e.touches[0];
+            const element = e.currentTarget;
+            
             isDragging = true;
-            draggedElement = this;
+            currentDragElement = element;
             
-            this.classList.add('dragging');
+            // Element pozisyonunu al
+            const rect = element.getBoundingClientRect();
+            const containerRect = document.querySelector('.game-container').getBoundingClientRect();
             
-            if (e.type === 'touchstart') {
-                const touch = e.touches[0];
-                dragStartX = touch.clientX;
-                dragStartY = touch.clientY;
-                touchDragging = true;
-                
-                const rect = this.getBoundingClientRect();
-                touchOffsetX = touch.clientX - rect.left;
-                touchOffsetY = touch.clientY - rect.top;
-            } else {
-                dragStartX = e.clientX;
-                dragStartY = e.clientY;
-            }
+            touchOffsetX = touch.clientX - rect.left;
+            touchOffsetY = touch.clientY - rect.top;
+            
+            element.classList.add('dragging');
+            
+            // Elementin z-index'ini artır
+            element.style.zIndex = '30';
         }
 
-        function drag(e) {
-            if (!isDragging || !draggedElement || !oyunAktif) return;
+        function handleTouchMove(e) {
+            if (!isDragging || !currentDragElement || !oyunAktif) return;
             
             e.preventDefault();
+            e.stopPropagation();
             
+            const touch = e.touches[0];
             const gameContainer = document.querySelector('.game-container');
             const containerRect = gameContainer.getBoundingClientRect();
             
-            let clientX, clientY;
+            // Yeni pozisyonu hesapla
+            let newX = touch.clientX - containerRect.left - touchOffsetX;
+            let newY = touch.clientY - containerRect.top - touchOffsetY;
             
-            if (e.type === 'touchmove' && touchDragging) {
-                const touch = e.touches[0];
-                clientX = touch.clientX;
-                clientY = touch.clientY;
-            } else if (e.type === 'mousemove') {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            } else {
-                return;
+            // Sınırları kontrol et
+            const elementWidth = currentDragElement.offsetWidth;
+            const elementHeight = currentDragElement.offsetHeight;
+            
+            newX = Math.max(0, Math.min(newX, containerRect.width - elementWidth));
+            newY = Math.max(0, Math.min(newY, containerRect.height - elementHeight));
+            
+            // Elementi hareket ettir
+            currentDragElement.style.left = newX + 'px';
+            currentDragElement.style.top = newY + 'px';
+            currentDragElement.style.bottom = 'auto';
+            
+            // Kediler üzerinde mi kontrol et (gerçek zamanlı)
+            checkDropOnKedi(touch.clientX, touch.clientY);
+        }
+
+        function handleTouchEnd(e) {
+            if (!isDragging || !currentDragElement) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Sürükleme işlemini sonlandır
+            currentDragElement.classList.remove('dragging');
+            currentDragElement.style.zIndex = '15';
+            
+            // Elementi hemen orijinal yerine döndür
+            resetItemPosition(currentDragElement);
+            
+            isDragging = false;
+            currentDragElement = null;
+        }
+
+        function checkDropOnKedi(clientX, clientY) {
+            if (!currentDragElement) return;
+            
+            // Hangi kedinin üzerinde olduğunu kontrol et
+            const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
+            let droppedOnKedi = null;
+            
+            for (let el of elementsAtPoint) {
+                if (el.classList.contains('kedi')) {
+                    droppedOnKedi = el;
+                    break;
+                }
             }
             
-            // Elementin boyutunu hesaba kat
-            const elementWidth = draggedElement.offsetWidth;
-            const elementHeight = draggedElement.offsetHeight;
+            // Eğer kedi üzerine geldiysek işlemi gerçekleştir
+            if (droppedOnKedi) {
+                handleDrop(droppedOnKedi, currentDragElement);
+                
+                // Elementi hemen yerine döndür
+                currentDragElement.classList.remove('dragging');
+                currentDragElement.style.zIndex = '15';
+                resetItemPosition(currentDragElement);
+                
+                // Sürükleme işlemini sonlandır
+                isDragging = false;
+                currentDragElement = null;
+            }
+        }
+
+        function resetItemPosition(element) {
+            if (element.classList.contains('mama-kabi')) {
+                element.style.left = '20px';
+                element.style.top = 'auto';
+                if (window.innerWidth >= 768) {
+                    element.style.bottom = '60px';
+                } else {
+                    element.style.bottom = '20px';
+                }
+            } else if (element.classList.contains('su-kabi')) {
+                if (window.innerWidth >= 768) {
+                    element.style.left = '100px';
+                    element.style.bottom = '60px';
+                } else {
+                    element.style.left = '80px';
+                    element.style.bottom = '20px';
+                }
+                element.style.top = 'auto';
+            }
+        }
+
+        function handleDrop(kediElement, draggedItem) {
+            const kedi = kediElement.classList.contains('rifki') ? 'rifki' : 'istanbul';
+            const istekTuru = kedilerinIstekleri[kedi];
             
-            // Pozisyonu hesapla
-            let left = clientX - containerRect.left - touchOffsetX;
-            let top = clientY - containerRect.top - touchOffsetY;
+            // Eğer kedinin bir isteği yoksa, bir şey yapma
+            if (!istekTuru) return;
             
-            // Sınırları kontrol et - mor çerçeveyi geçmesin
-            left = Math.max(0, Math.min(left, containerRect.width - elementWidth));
-            top = Math.max(0, Math.min(top, containerRect.height - elementHeight));
+            let dogruCevap = false;
+            let yanlisCevap = false;
             
-            // Pozisyonu ayarla
-            draggedElement.style.left = left + 'px';
-            draggedElement.style.top = top + 'px';
-            draggedElement.style.bottom = 'auto';
+            // Doğru eşleşme kontrolü
+            if (draggedItem.classList.contains('mama-kabi') && istekTuru === 'acikti') {
+                dogruCevap = true;
+            } else if (draggedItem.classList.contains('su-kabi') && istekTuru === 'susadi') {
+                dogruCevap = true;
+            } else {
+                yanlisCevap = true;
+            }
+            
+            if (dogruCevap) {
+                // Doğru eşleşme durumunda
+                const basariliMesaj = anneCevaplari.basarili[Math.floor(Math.random() * anneCevaplari.basarili.length)];
+                konusmaBalonuOlustur(kediElement, basariliMesaj, 'basarili');
+                
+                // Anne afiyet olsun desin
+                setTimeout(() => {
+                    if (!oyunAktif) return;
+                    const anneElement = document.querySelector('.husnanur');
+                    const afiyetMesaj = anneCevaplari.afiyet[Math.floor(Math.random() * anneCevaplari.afiyet.length)];
+                    konusmaBalonuOlustur(anneElement, afiyetMesaj, 'anne-cevap');
+                }, 1500);
+                
+                // Skoru artır
+                skor += 10 * seviye;
+                document.getElementById('skor').textContent = skor;
+                
+                // Süreyi artır
+                sure += 5;
+                document.getElementById('sure').textContent = sure;
+                
+                // İsteği sıfırla
+                delete kedilerinIstekleri[kedi];
+                
+                // Bu kedinin timer'ını da temizle
+                if (istekTimers[kedi]) {
+                    clearTimeout(istekTimers[kedi]);
+                    delete istekTimers[kedi];
+                }
+                
+                // Teşekkür ettikten hemen sonra yeni istek gelsin
+                setTimeout(() => {
+                    if (oyunAktif) yeniIstek(kedi);
+                }, 1600);
+                
+                karsilananIstekSayisi++;
+            } else if (yanlisCevap) {
+                // Yanlış eşleşme durumunda
+                const hataliMesaj = anneCevaplari.hatali[Math.floor(Math.random() * anneCevaplari.hatali.length)];
+                konusmaBalonuOlustur(kediElement, hataliMesaj, 'hatali');
+                
+                // Anne özür dilesin
+                setTimeout(() => {
+                    if (!oyunAktif) return;
+                    const anneElement = document.querySelector('.husnanur');
+                    const ozurMesaj = anneCevaplari.ozur[Math.floor(Math.random() * anneCevaplari.ozur.length)];
+                    konusmaBalonuOlustur(anneElement, ozurMesaj, 'ozur');
+                }, 1500);
+                
+                // Skoru azalt
+                skor = Math.max(0, skor - 5);
+                document.getElementById('skor').textContent = skor;
+                
+                // Süreyi azalt
+                sure = Math.max(1, sure - 2);
+                document.getElementById('sure').textContent = sure;
+            }
+        }
+
+        // Eski sürükleme fonksiyonlarını kaldır ve yenilerini ekle
+        function dragStart(e) {
+            // Sadece mouse için
+            if (e.type === 'mousedown' && !oyunAktif) return;
+            
+            isDragging = true;
+            currentDragElement = this;
+            this.classList.add('dragging');
+            this.style.zIndex = '30';
+        }
+
+        function drag(e) {
+            // Sadece mouse için
+            if (e.type === 'mousemove' && isDragging && currentDragElement && oyunAktif) {
+                e.preventDefault();
+                
+                const gameContainer = document.querySelector('.game-container');
+                const containerRect = gameContainer.getBoundingClientRect();
+                
+                // Pozisyonu hesapla
+                let left = e.clientX - containerRect.left - (currentDragElement.offsetWidth / 2);
+                let top = e.clientY - containerRect.top - (currentDragElement.offsetHeight / 2);
+                
+                // Sınırları kontrol et
+                left = Math.max(0, Math.min(left, containerRect.width - currentDragElement.offsetWidth));
+                top = Math.max(0, Math.min(top, containerRect.height - currentDragElement.offsetHeight));
+                
+                // Pozisyonu ayarla
+                currentDragElement.style.left = left + 'px';
+                currentDragElement.style.top = top + 'px';
+                currentDragElement.style.bottom = 'auto';
+                
+                // Kediler üzerinde mi kontrol et
+                checkDropOnKedi(e.clientX, e.clientY);
+            }
         }
 
         function dragEnd(e) {
-            if (!isDragging) return;
-            
-            isDragging = false;
-            touchDragging = false;
-            
-            if (draggedElement) {
-                draggedElement.classList.remove('dragging');
-                
-                // Eğer mama veya su kabı ise, orijinal yerine döndür
-                if (draggedElement.classList.contains('mama-kabi')) {
-                    draggedElement.style.left = orijinalPozisyonlar.mama.left;
-                    draggedElement.style.top = orijinalPozisyonlar.mama.top;
-                    draggedElement.style.bottom = orijinalPozisyonlar.mama.bottom;
-                } else if (draggedElement.classList.contains('su-kabi')) {
-                    draggedElement.style.left = orijinalPozisyonlar.su.left;
-                    draggedElement.style.top = orijinalPozisyonlar.su.top;
-                    draggedElement.style.bottom = orijinalPozisyonlar.su.bottom;
-                }
-                
-                draggedElement = null;
+            // Sadece mouse için
+            if (e.type === 'mouseup' && isDragging && currentDragElement) {
+                currentDragElement.classList.remove('dragging');
+                currentDragElement.style.zIndex = '15';
+                resetItemPosition(currentDragElement);
+                isDragging = false;
+                currentDragElement = null;
             }
         }
 
@@ -1081,22 +1365,36 @@
             }, 2000);
         }
 
-        // Drag and Drop için event listener'lar - yeni sistem
+        // DOM yüklendiğinde orijinal pozisyonları kaydet
+        window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.item').forEach(item => {
+                orijinalPozisyonlar[item.classList.contains('mama-kabi') ? 'mama' : 'su'] = {
+                    left: item.style.left,
+                    top: item.style.top,
+                    bottom: item.style.bottom
+                };
+            });
+        });
+
+                // Event listener'ları güncelle
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.item').forEach(item => {
-                item.addEventListener('mousedown', dragStart);
-                item.addEventListener('touchstart', dragStart, { passive: false });
+            const items = document.querySelectorAll('.item');
+            
+            items.forEach(item => {
+                // Touch events (mobil)
+                item.addEventListener('touchstart', handleTouchStart, { passive: false });
                 
-                // Global event listener'lar
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('touchmove', drag, { passive: false });
-                document.addEventListener('mouseup', dragEnd);
-                document.addEventListener('touchend', dragEnd);
+                // Mouse events (masaüstü)
+                item.addEventListener('mousedown', dragStart);
             });
 
+            // Global events
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleTouchEnd, { passive: false });
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+
             document.querySelectorAll('.kedi').forEach(kedi => {
-                kedi.addEventListener('dragover', dragOver);
-                kedi.addEventListener('drop', drop);
                 kedi.addEventListener('click', kediTikla);
                 kedi.addEventListener('touchend', kediTikla);
             });
