@@ -22,6 +22,61 @@
             align-items: center;
         }
 
+        .header-bar {
+            width: 100vw;
+            background: #7c3aed;
+            color: #fff;
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        @media (max-width: 600px) {
+            .header-bar {
+                font-size: 14px;
+                height: 32px;
+            }
+        }
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .header-bar {
+                font-size: 16px;
+                height: 40px;
+            }
+        }
+        @media (min-width: 1025px) {
+            .header-bar {
+                font-size: 20px;
+                height: 56px;
+            }
+        }
+        .game-container {
+            margin-top: 48px;
+        }
+        @media (max-width: 600px) {
+            .game-container {
+                margin-top: 32px;
+            }
+        }
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .game-container {
+                margin-top: 40px;
+            }
+        }
+        @media (min-width: 1025px) {
+            .game-container {
+                margin-top: 56px;
+            }
+        }
+
         .game-container {
             width: 100%;
             max-width: 450px;
@@ -304,6 +359,7 @@
     </style>
 </head>
 <body>
+    <div class="header-bar">Nurella Kids - Kedi Bakım Oyunu</div>
     <div class="game-container">
         <div class="hud">
             <div>Skor: <span id="skor">0</span></div>
@@ -345,6 +401,11 @@
         // Her kedi için son istek türünü tutacak obje
         let sonIstekTuru = { rifki: null, istanbul: null };
         let karsilananIstekSayisi = 0;
+
+        // Mobilde sürükleme için değişkenler
+        let touchDragging = false;
+        let touchOffsetX = 0;
+        let touchOffsetY = 0;
 
         const kediler = ['rifki', 'istanbul'];
         const kediElementleri = {
@@ -669,19 +730,21 @@
             if (!oyunAktif) return;
             draggedElement = this;
             this.classList.add('dragging');
-            
             // Touch cihazlar için
             if (e.type === 'touchstart') {
+                touchDragging = true;
                 const touch = e.touches[0];
-                this.initialX = touch.clientX - this.getBoundingClientRect().left;
-                this.initialY = touch.clientY - this.getBoundingClientRect().top;
+                const rect = this.getBoundingClientRect();
+                touchOffsetX = touch.clientX - rect.left;
+                touchOffsetY = touch.clientY - rect.top;
             }
         }
 
-        function dragEnd() {
+        function dragEnd(e) {
             if (draggedElement) {
                 draggedElement.classList.remove('dragging');
                 draggedElement = null;
+                touchDragging = false;
             }
         }
 
@@ -692,39 +755,42 @@
         function drag(e) {
             if (draggedElement && oyunAktif) {
                 e.preventDefault();
-                
-                // Mouse pozisyonunu al
-                let clientX, clientY;
-                
-                if (e.type === 'mousemove') {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                } else if (e.type === 'touchmove') {
+                if (e.type === 'touchmove' && touchDragging) {
                     const touch = e.touches[0];
-                    clientX = touch.clientX;
-                    clientY = touch.clientY;
+                    const gameContainer = document.querySelector('.game-container');
+                    const containerRect = gameContainer.getBoundingClientRect();
+                    let left = touch.clientX - containerRect.left - touchOffsetX;
+                    let top = touch.clientY - containerRect.top - touchOffsetY;
+                    // Sınırları kontrol et
+                    left = Math.max(0, Math.min(left, gameContainer.offsetWidth - draggedElement.offsetWidth));
+                    top = Math.max(0, Math.min(top, gameContainer.offsetHeight - draggedElement.offsetHeight));
+                    draggedElement.style.left = left + 'px';
+                    draggedElement.style.top = top + 'px';
+                    draggedElement.style.bottom = 'auto';
                 }
-                
-                // Elementi mouse pozisyonuna taşı
-                const gameContainer = document.querySelector('.game-container');
-                const rect = gameContainer.getBoundingClientRect();
-                
-                // Elementin boyutunu hesaba kat
-                const elementWidth = draggedElement.offsetWidth;
-                const elementHeight = draggedElement.offsetHeight;
-                
-                // Pozisyonu hesapla (container sınırları içinde)
-                let left = clientX - rect.left - (elementWidth / 2);
-                let top = clientY - rect.top - (elementHeight / 2);
-                
-                // Sınırları kontrol et
-                left = Math.max(0, Math.min(left, rect.width - elementWidth));
-                top = Math.max(0, Math.min(top, rect.height - elementHeight));
-                
-                // Pozisyonu ayarla
-                draggedElement.style.left = left + 'px';
-                draggedElement.style.top = top + 'px';
-                draggedElement.style.bottom = 'auto'; // bottom özelliğini kaldır
+                // Mouse için mevcut kodu koru
+                else if (e.type === 'mousemove') {
+                    // Elementi mouse pozisyonuna taşı
+                    const gameContainer = document.querySelector('.game-container');
+                    const rect = gameContainer.getBoundingClientRect();
+                    
+                    // Elementin boyutunu hesaba kat
+                    const elementWidth = draggedElement.offsetWidth;
+                    const elementHeight = draggedElement.offsetHeight;
+                    
+                    // Pozisyonu hesapla (container sınırları içinde)
+                    let left = e.clientX - rect.left - (elementWidth / 2);
+                    let top = e.clientY - rect.top - (elementHeight / 2);
+                    
+                    // Sınırları kontrol et
+                    left = Math.max(0, Math.min(left, rect.width - elementWidth));
+                    top = Math.max(0, Math.min(top, rect.height - elementHeight));
+                    
+                    // Pozisyonu ayarla
+                    draggedElement.style.left = left + 'px';
+                    draggedElement.style.top = top + 'px';
+                    draggedElement.style.bottom = 'auto'; // bottom özelliğini kaldır
+                }
             }
         }
 
@@ -814,6 +880,7 @@
             
             draggedElement.classList.remove('dragging');
             draggedElement = null;
+            touchDragging = false;
         }
 
         function guncelleHUD() {
@@ -951,14 +1018,11 @@
         document.querySelectorAll('.item').forEach(item => {
             item.addEventListener('mousedown', dragStart);
             item.addEventListener('touchstart', dragStart);
+            item.addEventListener('mousemove', drag);
+            item.addEventListener('touchmove', drag);
+            item.addEventListener('mouseup', dragEnd);
+            item.addEventListener('touchend', dragEnd);
         });
-
-        document.addEventListener('mouseup', dragEnd);
-        document.addEventListener('touchend', dragEnd);
-        
-        // Sürükleme için mouse ve touch event'leri
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('touchmove', drag, { passive: false });
 
         document.querySelectorAll('.kedi').forEach(kedi => {
             kedi.addEventListener('dragover', dragOver);
