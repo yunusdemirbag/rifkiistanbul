@@ -740,9 +740,31 @@
             }
         }
 
+        // Mama ve su kabı orijinal pozisyonları
+        let orijinalPozisyonlar = {};
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.item').forEach(item => {
+                orijinalPozisyonlar[item.classList.contains('mama-kabi') ? 'mama' : 'su'] = {
+                    left: item.style.left,
+                    top: item.style.top,
+                    bottom: item.style.bottom
+                };
+            });
+        });
+
         function dragEnd(e) {
             if (draggedElement) {
                 draggedElement.classList.remove('dragging');
+                // Eğer mama veya su kabı ise, orijinal yerine döndür
+                if (draggedElement.classList.contains('mama-kabi')) {
+                    draggedElement.style.left = orijinalPozisyonlar.mama.left;
+                    draggedElement.style.top = orijinalPozisyonlar.mama.top;
+                    draggedElement.style.bottom = orijinalPozisyonlar.mama.bottom;
+                } else if (draggedElement.classList.contains('su-kabi')) {
+                    draggedElement.style.left = orijinalPozisyonlar.su.left;
+                    draggedElement.style.top = orijinalPozisyonlar.su.top;
+                    draggedElement.style.bottom = orijinalPozisyonlar.su.bottom;
+                }
                 draggedElement = null;
                 touchDragging = false;
             }
@@ -867,15 +889,15 @@
                 document.getElementById('sure').textContent = sure;
             }
             
-            // Sürüklenen öğeyi başlangıç pozisyonuna geri döndür
+            // Her durumda kabı orijinal yerine döndür
             if (draggedElement.classList.contains('mama-kabi')) {
-                draggedElement.style.left = '20px';
-                draggedElement.style.bottom = '60px';
-                draggedElement.style.top = 'auto';
+                draggedElement.style.left = orijinalPozisyonlar.mama.left;
+                draggedElement.style.top = orijinalPozisyonlar.mama.top;
+                draggedElement.style.bottom = orijinalPozisyonlar.mama.bottom;
             } else if (draggedElement.classList.contains('su-kabi')) {
-                draggedElement.style.left = '100px';
-                draggedElement.style.bottom = '60px';
-                draggedElement.style.top = 'auto';
+                draggedElement.style.left = orijinalPozisyonlar.su.left;
+                draggedElement.style.top = orijinalPozisyonlar.su.top;
+                draggedElement.style.bottom = orijinalPozisyonlar.su.bottom;
             }
             
             draggedElement.classList.remove('dragging');
