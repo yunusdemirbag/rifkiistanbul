@@ -406,6 +406,12 @@
         let touchDragging = false;
         let touchOffsetX = 0;
         let touchOffsetY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+
+        // Mama ve su kabı orijinal pozisyonları
+        let orijinalPozisyonlar = {};
 
         const kediler = ['rifki', 'istanbul'];
         const kediElementleri = {
@@ -413,30 +419,30 @@
             istanbul: document.querySelector('.istanbul')
         };
 
-        // Kedilerin belireceği pozisyonlar (yeşil noktalar)
+        // Kedilerin belireceği pozisyonlar (yeşil noktalar) - oyun alanı sınırları içinde
         const pozisyonAlanlari = [
-            { x: 120, y: 120, isim: 'pencere-kenari-1' },
-            { x: 240, y: 120, isim: 'pencere-kenari-2' },
-            { x: 350, y: 140, isim: 'komidin-ustu' },
-            { x: 400, y: 200, isim: 'dolap-ustu-1' },
-            { x: 320, y: 200, isim: 'dolap-ustu-2' },
-            { x: 100, y: 220, isim: 'yatak-ustu-1' },
-            { x: 180, y: 220, isim: 'yatak-ustu-2' },
-            { x: 240, y: 220, isim: 'yatak-ustu-3' },
-            { x: 280, y: 280, isim: 'yatak-kenari' },
-            { x: 100, y: 320, isim: 'hali-ustu-1' },
-            { x: 180, y: 320, isim: 'hali-ustu-2' },
-            { x: 260, y: 320, isim: 'hali-ustu-3' },
-            { x: 340, y: 320, isim: 'hali-ustu-4' },
-            { x: 100, y: 400, isim: 'hali-kenari-1' },
-            { x: 180, y: 400, isim: 'hali-kenari-2' },
-            { x: 260, y: 400, isim: 'hali-kenari-3' },
-            { x: 340, y: 400, isim: 'hali-kenari-4' },
-            { x: 420, y: 400, isim: 'hali-kenari-5' },
-            { x: 140, y: 480, isim: 'oda-zemini-1' },
-            { x: 220, y: 480, isim: 'oda-zemini-2' },
-            { x: 300, y: 480, isim: 'oda-zemini-3' },
-            { x: 380, y: 480, isim: 'oda-zemini-4' }
+            { x: 50, y: 80, isim: 'pencere-kenari-1' },
+            { x: 150, y: 80, isim: 'pencere-kenari-2' },
+            { x: 250, y: 100, isim: 'komidin-ustu' },
+            { x: 300, y: 150, isim: 'dolap-ustu-1' },
+            { x: 220, y: 150, isim: 'dolap-ustu-2' },
+            { x: 50, y: 170, isim: 'yatak-ustu-1' },
+            { x: 130, y: 170, isim: 'yatak-ustu-2' },
+            { x: 190, y: 170, isim: 'yatak-ustu-3' },
+            { x: 230, y: 230, isim: 'yatak-kenari' },
+            { x: 50, y: 270, isim: 'hali-ustu-1' },
+            { x: 130, y: 270, isim: 'hali-ustu-2' },
+            { x: 210, y: 270, isim: 'hali-ustu-3' },
+            { x: 290, y: 270, isim: 'hali-ustu-4' },
+            { x: 50, y: 350, isim: 'hali-kenari-1' },
+            { x: 130, y: 350, isim: 'hali-kenari-2' },
+            { x: 210, y: 350, isim: 'hali-kenari-3' },
+            { x: 290, y: 350, isim: 'hali-kenari-4' },
+            { x: 370, y: 350, isim: 'hali-kenari-5' },
+            { x: 90, y: 430, isim: 'oda-zemini-1' },
+            { x: 170, y: 430, isim: 'oda-zemini-2' },
+            { x: 250, y: 430, isim: 'oda-zemini-3' },
+            { x: 330, y: 430, isim: 'oda-zemini-4' }
         ];
 
         const istekMesajlari = {
@@ -572,13 +578,14 @@
                     };
                 }
             }
+            
             // Eğer diğer kedi varsa, ona yakın pozisyonları eliyoruz
             if (digerKediPozisyonu) {
                 uygunPozisyonlar = uygunPozisyonlar.filter(p => {
                     const dx = p.x - digerKediPozisyonu.x;
                     const dy = p.y - digerKediPozisyonu.y;
                     const mesafe = Math.sqrt(dx*dx + dy*dy);
-                    return mesafe > 100; // 100px ve altı yakınlıkları ele
+                    return mesafe > 80; // 80px ve altı yakınlıkları ele
                 });
                 // Eğer hiç uygun pozisyon kalmazsa, tüm pozisyonlardan seç
                 if (uygunPozisyonlar.length === 0) {
@@ -591,12 +598,14 @@
             
             kullanilmisPozisyonlar.push(secilenPozisyon.isim);
             
-            // Oyun alanı sınırlarını kontrol et
+            // Oyun alanı sınırlarını kontrol et - mor çerçeveyi geçmesin
             const gameContainer = document.querySelector('.game-container');
-            const maxX = gameContainer.offsetWidth - element.offsetWidth;
-            const maxY = gameContainer.offsetHeight - element.offsetHeight - 40; // 40px alt boşluk
-            let x = Math.min(secilenPozisyon.x, maxX);
-            let y = Math.min(secilenPozisyon.y, maxY);
+            const maxX = gameContainer.offsetWidth - element.offsetWidth - 20; // 20px kenar boşluğu
+            const maxY = gameContainer.offsetHeight - element.offsetHeight - 60; // 60px alt boşluk (header için)
+            
+            let x = Math.max(20, Math.min(secilenPozisyon.x, maxX));
+            let y = Math.max(60, Math.min(secilenPozisyon.y, maxY));
+            
             element.style.left = x + 'px';
             element.style.top = y + 'px';
             element.classList.add('yeni-beliren');
@@ -673,9 +682,11 @@
             if (mevcutBalon) {
                 element.removeChild(mevcutBalon);
             }
+            
             const balloon = document.createElement('div');
             balloon.className = `speech-bubble ${tip}`;
             balloon.textContent = mesaj;
+            
             // Husnanur için balon daha aşağıda olsun
             if (element.classList.contains('husnanur')) {
                 balloon.style.top = '-70px'; // Karakterin hemen üstü
@@ -684,36 +695,53 @@
             }
             balloon.style.left = '50%';
             balloon.style.transform = 'translateX(-50%)';
+            
             element.appendChild(balloon);
+            
             // Balonun ekranda kalma süresi
             let sure = 1500; // Varsayılan 1.5 saniye
             if (tip === 'basarili') {
                 sure = 3000; // Teşekkür (başarılı) balonu 3 saniye
             }
+            
+            // Balonun pozisyonunu kontrol et ve düzelt - mor çerçeveyi geçmesin
+            setTimeout(() => {
+                const gameContainer = document.querySelector('.game-container');
+                const containerRect = gameContainer.getBoundingClientRect();
+                const balloonRect = balloon.getBoundingClientRect();
+                
+                let shiftX = 0;
+                let shiftY = 0;
+                
+                // Sol sınır kontrolü
+                if (balloonRect.left < containerRect.left + 10) {
+                    shiftX = containerRect.left + 10 - balloonRect.left;
+                }
+                // Sağ sınır kontrolü
+                else if (balloonRect.right > containerRect.right - 10) {
+                    shiftX = containerRect.right - 10 - balloonRect.right;
+                }
+                
+                // Üst sınır kontrolü (header'ı geçmesin)
+                if (balloonRect.top < containerRect.top + 60) {
+                    shiftY = containerRect.top + 60 - balloonRect.top;
+                }
+                
+                // Alt sınır kontrolü
+                if (balloonRect.bottom > containerRect.bottom - 10) {
+                    shiftY = containerRect.bottom - 10 - balloonRect.bottom;
+                }
+                
+                if (shiftX !== 0 || shiftY !== 0) {
+                    balloon.style.transform = `translateX(calc(-50% + ${shiftX}px)) translateY(${shiftY}px)`;
+                }
+            }, 10);
+            
             setTimeout(() => {
                 if (balloon.parentNode === element) {
                     element.removeChild(balloon);
                 }
             }, sure);
-            setTimeout(() => {
-                // Balonun pozisyonunu kontrol et ve düzelt
-                const gameContainer = document.querySelector('.game-container');
-                const rect = balloon.getBoundingClientRect();
-                const containerRect = gameContainer.getBoundingClientRect();
-                let shiftX = 0;
-                let shiftY = 0;
-                if (rect.left < containerRect.left) {
-                    shiftX = containerRect.left - rect.left;
-                } else if (rect.right > containerRect.right) {
-                    shiftX = containerRect.right - rect.right;
-                }
-                if (rect.top < containerRect.top) {
-                    shiftY = containerRect.top - rect.top;
-                }
-                if (shiftX !== 0 || shiftY !== 0) {
-                    balloon.style.transform = `translateX(calc(-50% + ${shiftX}px)) translateY(${shiftY}px)`;
-                }
-            }, 10);
         }
 
         function kediTikla(e) {
@@ -726,35 +754,79 @@
             }
         }
 
+        // Yeni sürükleme sistemi
         function dragStart(e) {
             if (!oyunAktif) return;
+            
+            e.preventDefault();
+            isDragging = true;
             draggedElement = this;
+            
             this.classList.add('dragging');
-            // Touch cihazlar için
+            
             if (e.type === 'touchstart') {
-                touchDragging = true;
                 const touch = e.touches[0];
+                dragStartX = touch.clientX;
+                dragStartY = touch.clientY;
+                touchDragging = true;
+                
                 const rect = this.getBoundingClientRect();
                 touchOffsetX = touch.clientX - rect.left;
                 touchOffsetY = touch.clientY - rect.top;
+            } else {
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
             }
         }
 
-        // Mama ve su kabı orijinal pozisyonları
-        let orijinalPozisyonlar = {};
-        window.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.item').forEach(item => {
-                orijinalPozisyonlar[item.classList.contains('mama-kabi') ? 'mama' : 'su'] = {
-                    left: item.style.left,
-                    top: item.style.top,
-                    bottom: item.style.bottom
-                };
-            });
-        });
+        function drag(e) {
+            if (!isDragging || !draggedElement || !oyunAktif) return;
+            
+            e.preventDefault();
+            
+            const gameContainer = document.querySelector('.game-container');
+            const containerRect = gameContainer.getBoundingClientRect();
+            
+            let clientX, clientY;
+            
+            if (e.type === 'touchmove' && touchDragging) {
+                const touch = e.touches[0];
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            } else if (e.type === 'mousemove') {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            } else {
+                return;
+            }
+            
+            // Elementin boyutunu hesaba kat
+            const elementWidth = draggedElement.offsetWidth;
+            const elementHeight = draggedElement.offsetHeight;
+            
+            // Pozisyonu hesapla
+            let left = clientX - containerRect.left - touchOffsetX;
+            let top = clientY - containerRect.top - touchOffsetY;
+            
+            // Sınırları kontrol et - mor çerçeveyi geçmesin
+            left = Math.max(0, Math.min(left, containerRect.width - elementWidth));
+            top = Math.max(0, Math.min(top, containerRect.height - elementHeight));
+            
+            // Pozisyonu ayarla
+            draggedElement.style.left = left + 'px';
+            draggedElement.style.top = top + 'px';
+            draggedElement.style.bottom = 'auto';
+        }
 
         function dragEnd(e) {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            touchDragging = false;
+            
             if (draggedElement) {
                 draggedElement.classList.remove('dragging');
+                
                 // Eğer mama veya su kabı ise, orijinal yerine döndür
                 if (draggedElement.classList.contains('mama-kabi')) {
                     draggedElement.style.left = orijinalPozisyonlar.mama.left;
@@ -765,55 +837,13 @@
                     draggedElement.style.top = orijinalPozisyonlar.su.top;
                     draggedElement.style.bottom = orijinalPozisyonlar.su.bottom;
                 }
+                
                 draggedElement = null;
-                touchDragging = false;
             }
         }
 
         function dragOver(e) {
             e.preventDefault();
-        }
-
-        function drag(e) {
-            if (draggedElement && oyunAktif) {
-                e.preventDefault();
-                if (e.type === 'touchmove' && touchDragging) {
-                    const touch = e.touches[0];
-                    const gameContainer = document.querySelector('.game-container');
-                    const containerRect = gameContainer.getBoundingClientRect();
-                    let left = touch.clientX - containerRect.left - touchOffsetX;
-                    let top = touch.clientY - containerRect.top - touchOffsetY;
-                    // Sınırları kontrol et
-                    left = Math.max(0, Math.min(left, gameContainer.offsetWidth - draggedElement.offsetWidth));
-                    top = Math.max(0, Math.min(top, gameContainer.offsetHeight - draggedElement.offsetHeight));
-                    draggedElement.style.left = left + 'px';
-                    draggedElement.style.top = top + 'px';
-                    draggedElement.style.bottom = 'auto';
-                }
-                // Mouse için mevcut kodu koru
-                else if (e.type === 'mousemove') {
-                    // Elementi mouse pozisyonuna taşı
-                    const gameContainer = document.querySelector('.game-container');
-                    const rect = gameContainer.getBoundingClientRect();
-                    
-                    // Elementin boyutunu hesaba kat
-                    const elementWidth = draggedElement.offsetWidth;
-                    const elementHeight = draggedElement.offsetHeight;
-                    
-                    // Pozisyonu hesapla (container sınırları içinde)
-                    let left = clientX - rect.left - (elementWidth / 2);
-                    let top = clientY - rect.top - (elementHeight / 2);
-                    
-                    // Sınırları kontrol et
-                    left = Math.max(0, Math.min(left, rect.width - elementWidth));
-                    top = Math.max(0, Math.min(top, rect.height - elementHeight));
-                    
-                    // Pozisyonu ayarla
-                    draggedElement.style.left = left + 'px';
-                    draggedElement.style.top = top + 'px';
-                    draggedElement.style.bottom = 'auto'; // bottom özelliğini kaldır
-                }
-            }
         }
 
         function drop(e) {
@@ -1036,21 +1066,36 @@
             }, 2000);
         }
 
-        // Drag and Drop için event listener'lar
-        document.querySelectorAll('.item').forEach(item => {
-            item.addEventListener('mousedown', dragStart);
-            item.addEventListener('touchstart', dragStart);
-            item.addEventListener('mousemove', drag);
-            item.addEventListener('touchmove', drag);
-            item.addEventListener('mouseup', dragEnd);
-            item.addEventListener('touchend', dragEnd);
+        // DOM yüklendiğinde orijinal pozisyonları kaydet
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.item').forEach(item => {
+                orijinalPozisyonlar[item.classList.contains('mama-kabi') ? 'mama' : 'su'] = {
+                    left: item.style.left,
+                    top: item.style.top,
+                    bottom: item.style.bottom
+                };
+            });
         });
 
-        document.querySelectorAll('.kedi').forEach(kedi => {
-            kedi.addEventListener('dragover', dragOver);
-            kedi.addEventListener('drop', drop);
-            kedi.addEventListener('click', kediTikla);
-            kedi.addEventListener('touchend', kediTikla);
+        // Drag and Drop için event listener'lar - yeni sistem
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.item').forEach(item => {
+                item.addEventListener('mousedown', dragStart);
+                item.addEventListener('touchstart', dragStart, { passive: false });
+                
+                // Global event listener'lar
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('touchmove', drag, { passive: false });
+                document.addEventListener('mouseup', dragEnd);
+                document.addEventListener('touchend', dragEnd);
+            });
+
+            document.querySelectorAll('.kedi').forEach(kedi => {
+                kedi.addEventListener('dragover', dragOver);
+                kedi.addEventListener('drop', drop);
+                kedi.addEventListener('click', kediTikla);
+                kedi.addEventListener('touchend', kediTikla);
+            });
         });
 
         // Oyunu başlat - Sayfa yüklendiğinde
