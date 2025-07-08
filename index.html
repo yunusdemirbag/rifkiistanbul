@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anne Kedi Bakım Oyunu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #8B4A9C, #6B3A7C);
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 800px;
+            position: relative;
+            background-image: url('oda.png');
+            background-size: cover;
+            background-position: center;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            overflow: hidden;
+        }
+
+        .husnanur {
+            width: 150px;
+            height: 225px;
+            background-image: url('husnanur.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .husnanur .karakter-isim {
+            font-size: 16px;
+            padding: 6px 18px;
+            bottom: -10px; /* Eskiden -40px idi, yukarı taşıdık */
+        }
+
+        .karakter-isim {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kedi {
+            width: 60px;
+            height: 60px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            z-index: 5;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+
+        .rifki {
+            background-image: url('rifki.png');
+        }
+
+        .istanbul {
+            background-image: url('istanbul.png');
+        }
+
+        .kedi:hover {
+            transform: scale(1.1);
+        }
+
+        .hud {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.85);
+            color: #FFD700;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 100;
+            border: 2px solid #FFD700;
+        }
+
+        .character {
+            transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .item {
+            width: 70px;
+            height: 70px;
+            position: absolute;
+            cursor: move;
+            z-index: 15;
+            transition: transform 0.2s ease;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .item:hover {
+            transform: scale(1.1);
+        }
+
+        .item.dragging {
+            transform: scale(1.2);
+            z-index: 20;
+            transition: none;
+        }
+
+        .mama-kabi {
+            background-image: url('mama.png');
+            bottom: 60px;
+            left: 20px;
+        }
+
+        .su-kabi {
+            background-image: url('su.png');
+            bottom: 60px;
+            left: 100px;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            background: white;
+            border: 4px solid #333;
+            border-radius: 15px;
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: bold;
+            max-width: 140px;
+            word-wrap: break-word;
+            z-index: 25;
+            animation: popIn 0.3s ease;
+            box-shadow: 
+                3px 3px 0px rgba(0,0,0,0.3),
+                inset 1px 1px 2px rgba(255,255,255,0.8);
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 12px solid white;
+            filter: drop-shadow(0px 3px 0px rgba(0,0,0,0.3));
+        }
+
+        @keyframes popIn {
+            0% { 
+                transform: translateX(-50%) scale(0) rotate(-5deg); 
+                opacity: 0; 
+            }
+            80% { 
+                transform: translateX(-50%) scale(1.1) rotate(2deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateX(-50%) scale(1) rotate(0deg); 
+                opacity: 1; 
+            }
+        }
+
+        .kedi-istek {
+            background: linear-gradient(145deg, #FFE4E1, #FFC0CB);
+            color: #8B0000;
+            border-color: #8B0000;
+        }
+
+        .anne-cevap {
+            background: linear-gradient(145deg, #E6F3FF, #B0E0E6);
+            color: #000080;
+            border-color: #000080;
+        }
+
+        .basarili {
+            background: linear-gradient(145deg, #90EE90, #98FB98);
+            color: #006400;
+            border-color: #006400;
+        }
+
+        .hatali {
+            background: linear-gradient(145deg, #FFB6C1, #FFA0B4);
+            color: #8B0000;
+            border-color: #8B0000;
+        }
+
+        .ozur {
+            background: linear-gradient(145deg, #D8BFD8, #DDA0DD);
+            color: #4B0082;
+            border-color: #4B0082;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(0,0,0,0.95), rgba(20,20,20,0.95));
+            color: #FFD700;
+            padding: 30px;
+            border-radius: 15px;
+            border: 4px solid #FFD700;
+            text-align: center;
+            z-index: 100;
+            display: none;
+            box-shadow: 
+                5px 5px 0px rgba(0,0,0,0.5),
+                inset 2px 2px 4px rgba(255,215,0,0.3);
+        }
+
+        .restart-btn {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+            border: 3px solid #2E7D32;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                3px 3px 0px rgba(0,0,0,0.3),
+                inset 1px 1px 2px rgba(255,255,255,0.3);
+        }
+
+        .restart-btn:hover {
+            background: linear-gradient(145deg, #45a049, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 
+                5px 5px 0px rgba(0,0,0,0.3),
+                inset 1px 1px 2px rgba(255,255,255,0.3);
+        }
+
+        /* Kediler için giriş animasyonu */
+        @keyframes kediBelir {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.5) rotate(-10deg); 
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(1.2) rotate(5deg); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+        }
+
+        .kedi.yeni-beliren {
+            animation: kediBelir 0.8s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="hud">
+            <div>Skor: <span id="skor">0</span></div>
+            <div>Süre: <span id="sure">30</span>s</div>
+            <div>Seviye: <span id="seviye">1</span></div>
+        </div>
+
+        <div class="husnanur character">
+            <div class="karakter-isim">Husnanur</div>
+        </div>
+        <div class="rifki kedi character">
+            <div class="karakter-isim">Rıfkı</div>
+        </div>
+        <div class="istanbul kedi character">
+            <div class="karakter-isim">İstanbul</div>
+        </div>
+        
+        <div class="mama-kabi item" draggable="true"></div>
+        <div class="su-kabi item" draggable="true"></div>
+
+        <div class="game-over" id="gameOver">
+            <h2>ANNEEEEEG!</h2>
+            <p>Oyun Bitti!</p>
+            <p>Final Skoru: <span id="finalSkor">0</span></p>
+            <button class="restart-btn" onclick="yeniOyun()">Yeniden Başla</button>
+        </div>
+    </div>
+
+    <script>
+        let skor = 0;
+        let sure = 30;
+        let seviye = 1;
+        let oyunAktif = false;
+        let draggedElement = null;
+        let kullanilmisPozisyonlar = [];
+        let kedilerinIstekleri = {};
+        let oyunBasladi = false;
+        let istekTimers = {}; // Her kedi için timer takibi
+        // Her kedi için son istek türünü tutacak obje
+        let sonIstekTuru = { rifki: null, istanbul: null };
+        let karsilananIstekSayisi = 0;
+
+        const kediler = ['rifki', 'istanbul'];
+        const kediElementleri = {
+            rifki: document.querySelector('.rifki'),
+            istanbul: document.querySelector('.istanbul')
+        };
+
+        // Kedilerin belireceği pozisyonlar (yeşil noktalar)
+        const pozisyonAlanlari = [
+            { x: 120, y: 120, isim: 'pencere-kenari-1' },
+            { x: 240, y: 120, isim: 'pencere-kenari-2' },
+            { x: 350, y: 140, isim: 'komidin-ustu' },
+            { x: 400, y: 200, isim: 'dolap-ustu-1' },
+            { x: 320, y: 200, isim: 'dolap-ustu-2' },
+            { x: 100, y: 220, isim: 'yatak-ustu-1' },
+            { x: 180, y: 220, isim: 'yatak-ustu-2' },
+            { x: 240, y: 220, isim: 'yatak-ustu-3' },
+            { x: 280, y: 280, isim: 'yatak-kenari' },
+            { x: 100, y: 320, isim: 'hali-ustu-1' },
+            { x: 180, y: 320, isim: 'hali-ustu-2' },
+            { x: 260, y: 320, isim: 'hali-ustu-3' },
+            { x: 340, y: 320, isim: 'hali-ustu-4' },
+            { x: 100, y: 400, isim: 'hali-kenari-1' },
+            { x: 180, y: 400, isim: 'hali-kenari-2' },
+            { x: 260, y: 400, isim: 'hali-kenari-3' },
+            { x: 340, y: 400, isim: 'hali-kenari-4' },
+            { x: 420, y: 400, isim: 'hali-kenari-5' },
+            { x: 140, y: 480, isim: 'oda-zemini-1' },
+            { x: 220, y: 480, isim: 'oda-zemini-2' },
+            { x: 300, y: 480, isim: 'oda-zemini-3' },
+            { x: 380, y: 480, isim: 'oda-zemini-4' }
+        ];
+
+        const istekMesajlari = {
+            acikti: [
+                "Anne çok acıktım hadi! miyav miyav",
+                "Anne karnım gurulduyor, acil MAMA!",
+                "Miyav miyav! Anne çok acım var, MAMA istiyorum!",
+                "Anne lütfen MAMA ver, ölüyorum açlıktan!",
+                "Miyav! Anne acıktım çok çok! MAMA!",
+                "Anne MAMA istiyorum lütfen!",
+                "Karnım boş anne, hemen MAMA getir!",
+                "Miyav miyav anne, MAMA zamanı geldi!",
+                "Anne çok aç kaldım, MAMA ver bana!",
+                "MAMA MAMA MAMA! Anne çok istiyorum!",
+                "Anne benim midem ses çıkarıyor, MAMA!",
+                "Miyav anne, güzel MAMA istiyorum!",
+                "Anne acıktım ya, hemen MAMA getir!",
+                "Anne çok acıktım hadi, MAMA ver!",
+                "Anne çok çok acıktım, MAMA lütfen!"
+            ],
+            susadi: [
+                "Anne susadım acil SU istiyorum!",
+                "Miyav miyav! SU istiyorum anne!",
+                "Anne çok susadım, dilim kurudu! SU!",
+                "SU ver anne, miyav miyav hadi!",
+                "Anne susuzluktan ölüyorum! SU!",
+                "Miyav! Anne SU getir bana!",
+                "Anne çok susadım hadi! SU!",
+                "SU istiyorum anne, çok susadım!",
+                "Anne ağzım çok kurudu, SU ver!",
+                "Miyav miyav! Taze SU istiyorum!",
+                "Anne susuzluk beni bitirdi, SU!",
+                "SU SU SU! Anne hemen getir!",
+                "Anne çok susadım ya, soğuk SU!",
+                "Miyav anne, temiz SU istiyorum!",
+                "Anne SU ver bana, çok susadım!"
+            ]
+        };
+
+        const anneCevaplari = {
+            bekle: [
+                "Tamam yavrum bekle biraz",
+                "Hemen geliyorum canım benim",
+                "Sabret biraz tatlı kedim",
+                "Anne geliyor, endişelenme",
+                "Bir dakika canım, hemen",
+                "Tamam aşkım, anne hallediyor",
+                "Bekle tatlım, anne getiyor",
+                "Sabırlı ol canım, geliyorum",
+                "Tamam Rifki getiriyorum oğlum",
+                "Tamam İstanbul'cum bekle anniş geliyor",
+                "Hemen geliyorum Rifki canım",
+                "Sabret İstanbul tatlım, anne geliyor",
+                "Bir dakika Rifki'ciğim, hemen",
+                "Tamam İstanbul bekle biraz"
+            ],
+            basarili: [
+                "Teşekkürler anniş, seni çok seviyorum!",
+                "Turuncu saçlı annem benim harikasın!",
+                "Lilyum gibi kokuyorsun anne, Lilyumlar seni görse bana benziyorsun derdi anne teşekkürler!",
+                "Çok uzak kaldık anniş, bir daha bu kadar uzak kalma bizden!",
+                "Aferin anne! Çok iyi bakıyorsun bize anniş!",
+                "Seni çok seviyorum anne canım!",
+                "En iyi anne sensin dünyada anniş!",
+                "Teşekkürler anne, çok lezzetli oldu!",
+                "Miyav miyav! Süpersin anniş!",
+                "Anne sen çok iyisin, seni seviyorum!",
+                "Vay be anne, tam istediğim gibi!",
+                "Anniş sen mükemmelsin, teşekkürler!",
+                "Sen bu dünyadaki en güzel kediciğimsin anniş!",
+                "Anne benim güzel annem, çok teşekkürler!",
+                "Anniş sen çok tatlısın, seni öpüyorum!",
+                "Lilyumdan da güzelsin Annem!"
+            ],
+            hatali: [
+                "Anne ne yapıyorsun sen öyle? Ben MAMA istemiştim!",
+                "Bu ne ya anne, ben SU istemiştim! MIYAAAAV!",
+                "Anne kafan mı karıştı tatlım? Ben bunu istememiştim!",
+                "MIYAAAAV MIYAAAAV! Yanlış şey bu anne!",
+                "Anne dikkatli ol biraz! Ben bunu istememiştim!",
+                "Ee anne, bu MAMA değil ki! Ben MAMA istemiştim!",
+                "Anne sen karıştırdın galiba! MIYAAAAV!",
+                "MIYAAAAV! Anne bu istediğim değil! Ben SU istemiştim!",
+                "Anniş bu yanlış, ben başka şey istemiştim! MIYAAAAV!",
+                "Anne ne yaptın ya, karıştırdın! Ben SU istemiştim!",
+                "Bu SU değil anne, MAMA istemiştim! MIYAAAAV!",
+                "Anniş dikkat et, yanlış verdin! Ben bunu istemiyorum!"
+            ],
+            ozur: [
+                "Ay özür dilerim canım, hemen doğrusunu getiriyorum!",
+                "Anniş çok özür diler, kafam karıştı!",
+                "Haklısın tatlım, anne yanlış yaptı, hemen düzeltiyorum!",
+                "Vay be, anne yanlış getirdi, hemen doğrusunu alıyorum!",
+                "Çok haklısın, anne dalgın bugün, özür dilerim!",
+                "Ay pardon canım kedim, hemen istediğini getiriyorum!",
+                "Anniş çok üzgün, hemen doğrusunu getireceğim!",
+                "Haklısın minik kedim, anne hata yaptı!",
+                "Özür dilerim canım, hemen düzeltiyorum!"
+            ],
+            afiyet: [
+                "Afiyet olsun canım benim!",
+                "Oh ne güzel, afiyet bal şeker olsun!",
+                "Afiyet olsun tatlı kedim, sevgiyle ye!",
+                "Güzel kedim benim, afiyet olsun sana!",
+                "Afiyetle ye canım, anne seni çok seviyor!",
+                "Afiyet olsun minik patilerim!",
+                "Annenin güzel kedisi, afiyet şeker olsun!",
+                "Ye bakalım güzelim, afiyet olsun!",
+                "Afiyet olsun canım, daha ister misin?",
+                "Afiyetler olsun tatlı kediciğim!",
+                "Annenin canı, afiyet olsun sana!",
+                "Oh oh, afiyet olsun minik yavrum!"
+            ]
+        };
+
+        function rastgelePozisyon(element, kediAdi = null) {
+            let uygunPozisyonlar = pozisyonAlanlari.filter(p => !kullanilmisPozisyonlar.includes(p.isim));
+            
+            if (uygunPozisyonlar.length === 0) {
+                kullanilmisPozisyonlar = [];
+                uygunPozisyonlar = pozisyonAlanlari;
+            }
+            
+            // Diğer kedinin pozisyonunu al
+            let digerKediPozisyonu = null;
+            if (kediAdi) {
+                const digerKedi = kediAdi === 'rifki' ? 'istanbul' : 'rifki';
+                const digerKediEl = kediElementleri[digerKedi];
+                if (digerKediEl) {
+                    digerKediPozisyonu = {
+                        x: parseInt(digerKediEl.style.left || '0'),
+                        y: parseInt(digerKediEl.style.top || '0')
+                    };
+                }
+            }
+            // Eğer diğer kedi varsa, ona yakın pozisyonları eliyoruz
+            if (digerKediPozisyonu) {
+                uygunPozisyonlar = uygunPozisyonlar.filter(p => {
+                    const dx = p.x - digerKediPozisyonu.x;
+                    const dy = p.y - digerKediPozisyonu.y;
+                    const mesafe = Math.sqrt(dx*dx + dy*dy);
+                    return mesafe > 100; // 100px ve altı yakınlıkları ele
+                });
+                // Eğer hiç uygun pozisyon kalmazsa, tüm pozisyonlardan seç
+                if (uygunPozisyonlar.length === 0) {
+                    uygunPozisyonlar = pozisyonAlanlari;
+                }
+            }
+            
+            const randomIndex = Math.floor(Math.random() * uygunPozisyonlar.length);
+            const secilenPozisyon = uygunPozisyonlar[randomIndex];
+            
+            kullanilmisPozisyonlar.push(secilenPozisyon.isim);
+            
+            // Oyun alanı sınırlarını kontrol et
+            const gameContainer = document.querySelector('.game-container');
+            const maxX = gameContainer.offsetWidth - element.offsetWidth;
+            const maxY = gameContainer.offsetHeight - element.offsetHeight - 40; // 40px alt boşluk
+            let x = Math.min(secilenPozisyon.x, maxX);
+            let y = Math.min(secilenPozisyon.y, maxY);
+            element.style.left = x + 'px';
+            element.style.top = y + 'px';
+            element.classList.add('yeni-beliren');
+            
+            setTimeout(() => {
+                element.classList.remove('yeni-beliren');
+            }, 800);
+        }
+
+        function yeniIstek(kedi) {
+            if (!oyunAktif) return;
+            
+            const kediElement = kediElementleri[kedi];
+            
+            // Eğer kedinin zaten aktif bir isteği varsa, yeni istek oluşturma
+            if (kedilerinIstekleri[kedi]) return;
+            
+            // Yeni pozisyon ver
+            rastgelePozisyon(kediElement, kedi);
+            
+            // Pozisyon animasyonu bittikten sonra istek ver
+            setTimeout(() => {
+                if (!oyunAktif || kedilerinIstekleri[kedi]) return;
+                
+                // Son istekle aynı olmasın diye rastgele istek türü seçimi
+                let istekTuru;
+                do {
+                    istekTuru = Math.random() < 0.5 ? 'acikti' : 'susadi';
+                } while (sonIstekTuru[kedi] === istekTuru && Math.random() < 0.7); // %70 aynı gelmesin
+                sonIstekTuru[kedi] = istekTuru;
+                kedilerinIstekleri[kedi] = istekTuru;
+                
+                // Rastgele bir mesaj seç
+                const mesajlar = istekMesajlari[istekTuru];
+                const mesaj = mesajlar[Math.floor(Math.random() * mesajlar.length)];
+                
+                // Konuşma balonu oluştur
+                konusmaBalonuOlustur(kediElement, mesaj, 'kedi-istek');
+                
+                // Anne cevap versin
+                setTimeout(() => {
+                    if (!oyunAktif) return;
+                    const anneElement = document.querySelector('.husnanur');
+                    const anneMesaj = anneCevaplari.bekle[Math.floor(Math.random() * anneCevaplari.bekle.length)];
+                    konusmaBalonuOlustur(anneElement, anneMesaj, 'anne-cevap');
+                }, 1000);
+
+                // Hız ayarı: karşılanan istek sayısına göre tekrar süresi
+                let tekrarSuresi = 2000;
+                if (karsilananIstekSayisi >= 60) {
+                    tekrarSuresi = 700;
+                } else if (karsilananIstekSayisi >= 40) {
+                    tekrarSuresi = 1100;
+                } else if (karsilananIstekSayisi >= 10) {
+                    tekrarSuresi = 1500;
+                }
+                // Eğer istek karşılanmazsa tekrar tekrar istemeye devam etsin
+                let tekrarIstek = () => {
+                    if (!oyunAktif) return;
+                    if (kedilerinIstekleri[kedi]) {
+                        // Hala istek karşılanmadıysa tekrar balon göster
+                        const yeniMesaj = mesajlar[Math.floor(Math.random() * mesajlar.length)];
+                        konusmaBalonuOlustur(kediElement, yeniMesaj, 'kedi-istek');
+                        setTimeout(tekrarIstek, tekrarSuresi);
+                    }
+                };
+                setTimeout(tekrarIstek, tekrarSuresi);
+            }, 900);
+        }
+
+        function konusmaBalonuOlustur(element, mesaj, tip) {
+            // Eğer zaten bir konuşma balonu varsa, onu kaldır
+            const mevcutBalon = element.querySelector('.speech-bubble');
+            if (mevcutBalon) {
+                element.removeChild(mevcutBalon);
+            }
+            const balloon = document.createElement('div');
+            balloon.className = `speech-bubble ${tip}`;
+            balloon.textContent = mesaj;
+            // Husnanur için balon daha aşağıda olsun
+            if (element.classList.contains('husnanur')) {
+                balloon.style.top = '-70px'; // Karakterin hemen üstü
+            } else {
+                balloon.style.top = '-110px'; // Diğer karakterler için daha yukarı
+            }
+            balloon.style.left = '50%';
+            balloon.style.transform = 'translateX(-50%)';
+            element.appendChild(balloon);
+            // Balonun ekranda kalma süresi
+            let sure = 1500; // Varsayılan 1.5 saniye
+            if (tip === 'basarili') {
+                sure = 3000; // Teşekkür (başarılı) balonu 3 saniye
+            }
+            setTimeout(() => {
+                if (balloon.parentNode === element) {
+                    element.removeChild(balloon);
+                }
+            }, sure);
+            setTimeout(() => {
+                // Balonun pozisyonunu kontrol et ve düzelt
+                const gameContainer = document.querySelector('.game-container');
+                const rect = balloon.getBoundingClientRect();
+                const containerRect = gameContainer.getBoundingClientRect();
+                let shiftX = 0;
+                let shiftY = 0;
+                if (rect.left < containerRect.left) {
+                    shiftX = containerRect.left - rect.left;
+                } else if (rect.right > containerRect.right) {
+                    shiftX = containerRect.right - rect.right;
+                }
+                if (rect.top < containerRect.top) {
+                    shiftY = containerRect.top - rect.top;
+                }
+                if (shiftX !== 0 || shiftY !== 0) {
+                    balloon.style.transform = `translateX(calc(-50% + ${shiftX}px)) translateY(${shiftY}px)`;
+                }
+            }, 10);
+        }
+
+        function kediTikla(e) {
+            if (!oyunAktif) return;
+            const kedi = this.classList.contains('rifki') ? 'rifki' : 'istanbul';
+            
+            // Eğer kedinin bir isteği yoksa yeni istek ver
+            if (!kedilerinIstekleri[kedi]) {
+                yeniIstek(kedi);
+            }
+        }
+
+        function dragStart(e) {
+            if (!oyunAktif) return;
+            draggedElement = this;
+            this.classList.add('dragging');
+            
+            // Touch cihazlar için
+            if (e.type === 'touchstart') {
+                const touch = e.touches[0];
+                this.initialX = touch.clientX - this.getBoundingClientRect().left;
+                this.initialY = touch.clientY - this.getBoundingClientRect().top;
+            }
+        }
+
+        function dragEnd() {
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+                draggedElement = null;
+            }
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function drag(e) {
+            if (draggedElement && oyunAktif) {
+                e.preventDefault();
+                
+                // Mouse pozisyonunu al
+                let clientX, clientY;
+                
+                if (e.type === 'mousemove') {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                } else if (e.type === 'touchmove') {
+                    const touch = e.touches[0];
+                    clientX = touch.clientX;
+                    clientY = touch.clientY;
+                }
+                
+                // Elementi mouse pozisyonuna taşı
+                const gameContainer = document.querySelector('.game-container');
+                const rect = gameContainer.getBoundingClientRect();
+                
+                // Elementin boyutunu hesaba kat
+                const elementWidth = draggedElement.offsetWidth;
+                const elementHeight = draggedElement.offsetHeight;
+                
+                // Pozisyonu hesapla (container sınırları içinde)
+                let left = clientX - rect.left - (elementWidth / 2);
+                let top = clientY - rect.top - (elementHeight / 2);
+                
+                // Sınırları kontrol et
+                left = Math.max(0, Math.min(left, rect.width - elementWidth));
+                top = Math.max(0, Math.min(top, rect.height - elementHeight));
+                
+                // Pozisyonu ayarla
+                draggedElement.style.left = left + 'px';
+                draggedElement.style.top = top + 'px';
+                draggedElement.style.bottom = 'auto'; // bottom özelliğini kaldır
+            }
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            if (!draggedElement || !oyunAktif) return;
+            
+            const kedi = this.classList.contains('rifki') ? 'rifki' : 'istanbul';
+            const istekTuru = kedilerinIstekleri[kedi];
+            
+            // Eğer kedinin bir isteği yoksa, bir şey yapma
+            if (!istekTuru) return;
+            
+            let dogruCevap = false;
+            let yanlisCevap = false;
+            
+            // Doğru eşleşme kontrolü
+            if (draggedElement.classList.contains('mama-kabi') && istekTuru === 'acikti') {
+                dogruCevap = true;
+            } else if (draggedElement.classList.contains('su-kabi') && istekTuru === 'susadi') {
+                dogruCevap = true;
+            } else {
+                yanlisCevap = true;
+            }
+            
+            if (dogruCevap) {
+                // Doğru eşleşme durumunda
+                const basariliMesaj = anneCevaplari.basarili[Math.floor(Math.random() * anneCevaplari.basarili.length)];
+                konusmaBalonuOlustur(this, basariliMesaj, 'basarili');
+                // Anne afiyet olsun desin
+                setTimeout(() => {
+                    if (!oyunAktif) return;
+                    const anneElement = document.querySelector('.husnanur');
+                    const afiyetMesaj = anneCevaplari.afiyet[Math.floor(Math.random() * anneCevaplari.afiyet.length)];
+                    konusmaBalonuOlustur(anneElement, afiyetMesaj, 'anne-cevap');
+                }, 1500);
+                // Skoru artır
+                skor += 10 * seviye;
+                document.getElementById('skor').textContent = skor;
+                // Süreyi artır
+                sure += 5;
+                document.getElementById('sure').textContent = sure;
+                // İsteği sıfırla
+                delete kedilerinIstekleri[kedi];
+                // Bu kedinin timer'ını da temizle
+                if (istekTimers[kedi]) {
+                    clearTimeout(istekTimers[kedi]);
+                    delete istekTimers[kedi];
+                }
+                // Teşekkür ettikten hemen sonra yeni istek gelsin
+                setTimeout(() => {
+                    if (oyunAktif) yeniIstek(kedi);
+                }, 1600);
+                karsilananIstekSayisi++;
+            } else if (yanlisCevap) {
+                // Yanlış eşleşme durumunda
+                const hataliMesaj = anneCevaplari.hatali[Math.floor(Math.random() * anneCevaplari.hatali.length)];
+                konusmaBalonuOlustur(this, hataliMesaj, 'hatali');
+                
+                // Anne özür dilesin
+                setTimeout(() => {
+                    if (!oyunAktif) return;
+                    const anneElement = document.querySelector('.husnanur');
+                    const ozurMesaj = anneCevaplari.ozur[Math.floor(Math.random() * anneCevaplari.ozur.length)];
+                    konusmaBalonuOlustur(anneElement, ozurMesaj, 'ozur');
+                }, 1500);
+                
+                // Skoru azalt
+                skor = Math.max(0, skor - 5);
+                document.getElementById('skor').textContent = skor;
+                
+                // Süreyi azalt
+                sure = Math.max(1, sure - 2);
+                document.getElementById('sure').textContent = sure;
+            }
+            
+            // Sürüklenen öğeyi başlangıç pozisyonuna geri döndür
+            if (draggedElement.classList.contains('mama-kabi')) {
+                draggedElement.style.left = '20px';
+                draggedElement.style.bottom = '60px';
+                draggedElement.style.top = 'auto';
+            } else if (draggedElement.classList.contains('su-kabi')) {
+                draggedElement.style.left = '100px';
+                draggedElement.style.bottom = '60px';
+                draggedElement.style.top = 'auto';
+            }
+            
+            draggedElement.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        function guncelleHUD() {
+            document.getElementById('skor').textContent = skor;
+            document.getElementById('sure').textContent = sure;
+            document.getElementById('seviye').textContent = seviye;
+        }
+
+        function oyunBitir() {
+            oyunAktif = false;
+            
+            // Tüm timer'ları temizle
+            Object.values(istekTimers).forEach(timer => clearTimeout(timer));
+            istekTimers = {};
+            
+            document.getElementById('finalSkor').textContent = skor;
+            document.getElementById('gameOver').style.display = 'block';
+            
+            // ANNEEEEEG sesi (metin) - rastgele game over mesajları
+            const gameOverMesajlari = [
+                "ANNEEEEEG! Zaman bitti!",
+                "ANNEEEEEG! Oyun bitti kediler aç kaldı!",
+                "ANNEEEEEG! Kediler çok üzgün!",
+                "ANNEEEEEG! Anne çok yavaştın!"
+            ];
+            const husnanur = document.querySelector('.husnanur');
+            const randomMesaj = gameOverMesajlari[Math.floor(Math.random() * gameOverMesajlari.length)];
+            konusmaBalonuOlustur(husnanur, randomMesaj, 'hatali');
+        }
+
+        function yeniOyun() {
+            skor = 0;
+            sure = 30;
+            seviye = 1;
+            oyunAktif = true;
+            oyunBasladi = true;
+            kedilerinIstekleri = {};
+            kullanilmisPozisyonlar = [];
+            
+            // Önceki timer'ları temizle
+            Object.values(istekTimers).forEach(timer => clearTimeout(timer));
+            istekTimers = {};
+            
+            document.getElementById('gameOver').style.display = 'none';
+            guncelleHUD();
+            karsilananIstekSayisi = 0;
+            
+            // Kedileri farklı rastgele konumlandır
+            rastgelePozisyon(kediElementleri.rifki, 'rifki');
+            rastgelePozisyon(kediElementleri.istanbul, 'istanbul');
+            
+            // Oyun başlangıç mesajı
+            const husnanur = document.querySelector('.husnanur');
+            setTimeout(() => {
+                konusmaBalonuOlustur(husnanur, "Merhaba kedilerim! Anne burada, size bakacağım!", 'anne-cevap');
+            }, 1000);
+            
+            // İlk istekleri başlat - her iki kedi için de
+            setTimeout(() => {
+                if (oyunAktif) yeniIstek('rifki');
+            }, 2000);
+            
+            setTimeout(() => {
+                if (oyunAktif) yeniIstek('istanbul');
+            }, 3500);
+            
+            oyunDongusu();
+        }
+
+        function oyunDongusu() {
+            if (!oyunAktif) return;
+
+            // Süre sayacı
+            const sureInterval = setInterval(() => {
+                if (!oyunAktif) {
+                    clearInterval(sureInterval);
+                    return;
+                }
+                
+                sure--;
+                guncelleHUD();
+                
+                if (sure <= 0) {
+                    clearInterval(sureInterval);
+                    oyunBitir();
+                }
+            }, 1000);
+
+            // Her kedi için ayrı timer sistemi
+            function kediyeIstekVer(kedi) {
+                if (!oyunAktif) return;
+                
+                // Eğer kedinin aktif bir isteği yoksa ve timer'ı yoksa
+                if (!kedilerinIstekleri[kedi] && !istekTimers[kedi]) {
+                    // 3-7 saniye arası rastgele gecikme
+                    const gecikme = 3000 + Math.random() * 4000;
+                    
+                    istekTimers[kedi] = setTimeout(() => {
+                        if (oyunAktif && !kedilerinIstekleri[kedi]) {
+                            yeniIstek(kedi);
+                        }
+                        delete istekTimers[kedi];
+                        
+                        // Bir sonraki istek için yeni timer kur
+                        setTimeout(() => {
+                            kediyeIstekVer(kedi);
+                        }, 1000);
+                    }, gecikme);
+                }
+            }
+
+            // Her iki kedi için de ayrı döngü başlat
+            setTimeout(() => kediyeIstekVer('rifki'), 1000);
+            setTimeout(() => kediyeIstekVer('istanbul'), 2000);
+
+            // Seviye artırma
+            const seviyeInterval = setInterval(() => {
+                if (!oyunAktif) {
+                    clearInterval(seviyeInterval);
+                    return;
+                }
+                
+                const yeniSeviye = Math.floor(skor / 50) + 1;
+                if (yeniSeviye > seviye) {
+                    seviye = yeniSeviye;
+                    guncelleHUD();
+                    
+                    const husnanur = document.querySelector('.husnanur');
+                    konusmaBalonuOlustur(husnanur, `Seviye ${seviye}! Harika gidiyorsun!`, 'basarili');
+                }
+            }, 2000);
+        }
+
+        // Drag and Drop için event listener'lar
+        document.querySelectorAll('.item').forEach(item => {
+            item.addEventListener('mousedown', dragStart);
+            item.addEventListener('touchstart', dragStart);
+        });
+
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchend', dragEnd);
+        
+        // Sürükleme için mouse ve touch event'leri
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, { passive: false });
+
+        document.querySelectorAll('.kedi').forEach(kedi => {
+            kedi.addEventListener('dragover', dragOver);
+            kedi.addEventListener('drop', drop);
+            kedi.addEventListener('click', kediTikla);
+            kedi.addEventListener('touchend', kediTikla);
+        });
+
+        // Oyunu başlat - Sayfa yüklendiğinde
+        window.addEventListener('load', () => {
+            // Biraz bekleyip oyunu başlat
+            setTimeout(() => {
+                yeniOyun();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
